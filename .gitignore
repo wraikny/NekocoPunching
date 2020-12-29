@@ -366,6 +366,7 @@ FodyWeavers.xsd
 /*.zip
 /.envrc
 /Resources/**
+/Resources.pack
 
 
 !/**/.gitkeep
