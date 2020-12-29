@@ -2,8 +2,7 @@
 source https://api.nuget.org/v3/index.json
 nuget Fake.DotNet.Cli
 nuget Fake.IO.FileSystem
-nuget Fake.Core.Target
-nuget FAKE.IO.Zip //"
+nuget Fake.Core.Target //"
 
 #load ".fake/build.fsx/intellisense.fsx"
 #r "netstandard"
@@ -16,7 +15,6 @@ open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open Fake.Core.TargetOperators
 
-// let runtimes = [ "win-x64"; "osx-x64" ]
 let Altseed2Dir = @"lib/Altseed2"
 
 let dotnet cmd arg =
@@ -83,10 +81,10 @@ let publish (runtime: string) (outputBinDir) =
 let copyResources outoutPath =
   "Resources.pack" |> Shell.copyFile outoutPath
 
-let zipPublishedFiles outputPath =
-  Trace.tracefn "Make %s.zip" outputPath
-  !! (sprintf "%s/**" outputPath)
-  |> Zip.zip "publish" (sprintf "%s.zip" outputPath)
+// let zipPublishedFiles outputPath =
+//   Trace.tracefn "Make %s.zip" outputPath
+//   !! (sprintf "%s/**" outputPath)
+//   |> Zip.zip "publish" (sprintf "%s.zip" outputPath)
 
 
 Target.create "PublishWin" (fun _ ->
@@ -100,7 +98,7 @@ Target.create "PublishWin" (fun _ ->
   copyReadme outputPath
   makeLicense outputPath
   copyResources outputPath
-  zipPublishedFiles outputPath
+  // zipPublishedFiles outputPath
 )
 
 Target.create "PublishMac" (fun _ ->
@@ -127,7 +125,7 @@ Target.create "PublishMac" (fun _ ->
   Shell.Exec ("chmod", sprintf "+x %s/NekocoPunching" binOutputDir)
   |> ignore
 
-  zipPublishedFiles outputPath
+  // zipPublishedFiles outputPath
 )
 
 Target.create "CopyLib" (fun _ ->
