@@ -23,7 +23,7 @@ let config =
 if not <| Engine.Initialize("Pack", 1, 1, config) then
   failwith "Failed to initialize the Engine"
 
-printfn "Packing %s to %s.pack ..." Target Target
+printfn $"Packing %s{Target} to %s{Target}.pack ..."
 if Engine.File.PackWithPassword (Target, $"%s{Target}.pack", Password) then
   printfn "Succcess!"
 else
