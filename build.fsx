@@ -52,7 +52,7 @@ let copyReadme outputPath =
 
 let makeLicense outputPath =
   [|
-    // "NekocoPunching", "LICENSE"
+    "NekocoPunching", "LICENSE"
     ".NET Core", "PublishContents/LICENSES/dotnetcore.txt"
     "Altseed2", "lib/Altseed2/LICENSE"
     "Altseed2.BoxUI", "lib/Altseed2.BoxUI/LICENSE"
