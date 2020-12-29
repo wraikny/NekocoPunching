@@ -54,6 +54,7 @@ let makeLicense outputPath =
   [|
     "NekocoPunching", "LICENSE"
     ".NET Core", "PublishContents/LICENSES/dotnetcore.txt"
+    "FSharp.Data.LiteralProviders", "PublishContents/LICENSES/fsharp.data.literalproviders.txt"
     "Altseed2", "lib/Altseed2/LICENSE"
     "Altseed2.BoxUI", "lib/Altseed2.BoxUI/LICENSE"
   |]
