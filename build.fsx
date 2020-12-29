@@ -17,12 +17,9 @@ open Fake.Core.TargetOperators
 
 let Altseed2Dir = @"lib/Altseed2"
 
-let dotnet cmd arg =
-  let res = DotNet.exec id cmd arg
-  if not res.OK then
-    failwithf "Failed 'dotnet %s %s'" cmd arg
+let ProjectName = "NekocoPunching"
 
-let getOutputPath = sprintf "publish/NekocoPunching.%s"
+let getOutputPath = sprintf "publish/%s.%s" ProjectName
 
 Target.initEnvironment()
 
@@ -40,6 +37,10 @@ Target.create "Build" (fun _ ->
   |> Seq.iter (DotNet.build id)
 )
 
+let dotnet cmd arg =
+  let res = DotNet.exec id cmd arg
+  if not res.OK then failwithf "Failed 'dotnet %s %s'" cmd arg
+
 Target.create "Pack" (fun _ ->
   dotnet "fsi" "--exec pack.fsx"
 )
@@ -50,7 +51,7 @@ let copyReadme outputPath =
 
 let makeLicense outputPath =
   [|
-    "NekocoPunching", "LICENSE"
+    ProjectName, "LICENSE"
     ".NET Core", "PublishContents/LICENSES/dotnetcore.txt"
     "FSharp.Data.LiteralProviders", "PublishContents/LICENSES/fsharp.data.literalproviders.txt"
     "Altseed2", "lib/Altseed2/LICENSE"
@@ -61,7 +62,7 @@ let makeLicense outputPath =
   |> File.writeString false (sprintf "%s/LICENSE.txt" outputPath)
 
 let publish (runtime: string) (outputBinDir) =
-  "src/NekocoPunching/NekocoPunching.fsproj"
+  sprintf "src/%s/%s.fsproj" ProjectName ProjectName
   |> DotNet.publish (fun p ->
     { p with
         Runtime = Some runtime
@@ -114,7 +115,7 @@ Target.create "PublishMac" (fun _ ->
   makeLicense outputPath
   copyResources outputPath
 
-  let shellFileName = "NekocoPunching.command"
+  let shellFileName = sprintf "%s.command" ProjectName
 
   sprintf "PublishContents/%s" shellFileName
   |> Shell.copyFile outputPath
@@ -122,7 +123,7 @@ Target.create "PublishMac" (fun _ ->
   Shell.Exec ("chmod", sprintf "+x %s/%s" outputPath shellFileName)
   |> ignore
 
-  Shell.Exec ("chmod", sprintf "+x %s/NekocoPunching" binOutputDir)
+  Shell.Exec ("chmod", sprintf "+x %s/%s" binOutputDir ProjectName)
   |> ignore
 
   // zipPublishedFiles outputPath
