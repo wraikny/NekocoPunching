@@ -2,6 +2,7 @@
 source https://api.nuget.org/v3/index.json
 nuget Fake.DotNet.Cli
 nuget Fake.IO.FileSystem
+nuget Fake.IO.Zip
 nuget Fake.Core.Target //"
 
 #load ".fake/build.fsx/intellisense.fsx"
@@ -43,6 +44,9 @@ let dotnet cmd arg =
 
 Target.create "Pack" (fun _ ->
   dotnet "fsi" "--exec pack.fsx"
+
+  !! "Resources/**"
+  |> Zip.zip "Resources" "Resources.zip"
 )
 
 let copyReadme outputPath =
@@ -98,7 +102,7 @@ Target.create "PublishWin" (fun _ ->
   publish runtime outputPath
   copyReadme outputPath
   makeLicense outputPath
-  copyResources outputPath
+  // copyResources outputPath
   // zipPublishedFiles outputPath
 )
 
@@ -113,7 +117,7 @@ Target.create "PublishMac" (fun _ ->
   publish runtime binOutputDir
   copyReadme outputPath
   makeLicense outputPath
-  copyResources outputPath
+  // copyResources outputPath
 
   let shellFileName = sprintf "%s.command" ProjectName
 
@@ -127,6 +131,31 @@ Target.create "PublishMac" (fun _ ->
   |> ignore
 
   // zipPublishedFiles outputPath
+)
+
+Target.create "Repack" (fun _ ->
+  let artifactsDir = "artifacts"
+
+  let zipDir outputPath =
+    Trace.tracefn "Make %s.zip" outputPath
+    !! (sprintf "%s/**" outputPath)
+    |> Zip.zip artifactsDir (sprintf "%s.zip" outputPath)
+
+  !! (sprintf "%s/**.zip" artifactsDir)
+  |> Seq.iter (fun path ->
+    let filename = IO.Path.GetFileNameWithoutExtension path
+
+    let outputDir = sprintf "%s/%s" artifactsDir filename
+
+    path |> Zip.unzip outputDir
+
+    "Resources.pack" |> Shell.copyFile outputDir
+
+    !! (sprintf "%s/%s/**" outputDir filename)
+    |> Zip.zip artifactsDir (sprintf "publish/%s.zip" filename)
+
+    Directory.delete outputDir
+  )
 )
 
 Target.create "CopyLib" (fun _ ->
