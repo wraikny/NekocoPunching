@@ -77,20 +77,18 @@ let publish (runtime: string) (outputBinDir) =
             Properties =
               ("PublishSingleFile", "true")
               :: ("PublishTrimmed", "true")
+              :: ("CopyOutputSymbolsToPublishDirectory", "false")
               :: p.MSBuildParams.Properties
         }
         OutputPath = Some outputBinDir
     }
   )
 
+  !! (sprintf "%s/**.pdb" outputBinDir)
+  |> File.deleteAll
+
 let copyResources outoutPath =
   "Resources.pack" |> Shell.copyFile outoutPath
-
-// let zipPublishedFiles outputPath =
-//   Trace.tracefn "Make %s.zip" outputPath
-//   !! (sprintf "%s/**" outputPath)
-//   |> Zip.zip "publish" (sprintf "%s.zip" outputPath)
-
 
 Target.create "PublishWin" (fun _ ->
   let runtime = "win-x64"
@@ -102,8 +100,6 @@ Target.create "PublishWin" (fun _ ->
   publish runtime outputPath
   copyReadme outputPath
   makeLicense outputPath
-  // copyResources outputPath
-  // zipPublishedFiles outputPath
 )
 
 Target.create "PublishMac" (fun _ ->
@@ -117,7 +113,6 @@ Target.create "PublishMac" (fun _ ->
   publish runtime binOutputDir
   copyReadme outputPath
   makeLicense outputPath
-  // copyResources outputPath
 
   let shellFileName = sprintf "%s.command" ProjectName
 
@@ -129,8 +124,6 @@ Target.create "PublishMac" (fun _ ->
 
   Shell.Exec ("chmod", sprintf "+x %s/%s" binOutputDir ProjectName)
   |> ignore
-
-  // zipPublishedFiles outputPath
 )
 
 Target.create "Repack" (fun _ ->
@@ -151,10 +144,11 @@ Target.create "Repack" (fun _ ->
 
     "Resources.pack" |> Shell.copyFile outputDir
 
-    !! (sprintf "%s/%s/**" outputDir filename)
+    !! (sprintf "%s/**" outputDir)
     |> Zip.zip artifactsDir (sprintf "publish/%s.zip" filename)
 
     Directory.delete outputDir
+    
   )
 )
 

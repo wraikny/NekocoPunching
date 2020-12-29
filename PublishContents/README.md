@@ -9,6 +9,8 @@
 `NekocoPunching.exe`をダブルクリックで実行。
 
 ### Mac
+1. `chmod +x Bin/NekocoPunching`
+1. `chmod +x NekocoPunching.command`
 1. `Bin/NekocoPunching`を右クリック -> 開く -> 許可
 1. 「NekocoPunchingが予期しない理由で終了しました。」と表示されますが、問題ありません。
 1. `NekocoPunching.command` を右クリック -> 開く -> 許可
