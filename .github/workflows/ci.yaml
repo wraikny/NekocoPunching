@@ -42,12 +42,12 @@ jobs:
         dotnet fake build -t Build
 
     - name: PublishMac
-      if: runner.os == 'macOS'
+      if: runner.os == 'macOS' && startsWith(github.ref, 'refs/tags/')
       run: |
         dotnet fake build -t PublishMac
 
     - name: PublishWindows
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && startsWith(github.ref, 'refs/tags/')
       run: |
         dotnet fake build -t PublishWin
 
