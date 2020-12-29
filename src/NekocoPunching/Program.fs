@@ -1,13 +1,21 @@
-// Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
-
 open System
+open Altseed2
+open Altseed2.BoxUI
 
-// Define a function to construct a message to print
-let from whom =
-    sprintf "from %s" whom
+let shouldTrue msg cond =
+  if not cond then failwith msg
 
 [<EntryPoint>]
 let main _ =
-    let message = from "F#" // Call the function
-    printfn "Hello world %s" message
-    0 // return an integer exit code
+
+  Engine.Initialize("NekocoPunching", 800, 600)
+  |> shouldTrue "Failed to initialize the Engine"
+
+  while Engine.DoEvents() do
+    BoxUISystem.Update()
+    Engine.Update |> ignore
+
+  BoxUISystem.Terminate()
+  Engine.Terminate()
+
+  0
