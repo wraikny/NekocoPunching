@@ -144,6 +144,14 @@ Target.create "Repack" (fun _ ->
 
     "Resources.pack" |> Shell.copyFile outputDir
 
+    if filename.Contains "osx-x64" then
+      Shell.Exec ("chmod", sprintf "+x %s/%s.command" outputDir ProjectName)
+      |> ignore
+
+      Shell.Exec ("chmod", sprintf "+x %s/Bin/%s" outputDir ProjectName)
+      |> ignore
+      ()
+
     !! (sprintf "%s/**" outputDir)
     |> Zip.zip artifactsDir (sprintf "publish/%s.zip" filename)
 
